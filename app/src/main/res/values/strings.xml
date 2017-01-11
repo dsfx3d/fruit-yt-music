@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Fruit Music</string>
+    <string name="sniff_internet">Sniff Internet</string>
+    <string name="stop_sniffing">Stop Sniffing</string>
+    <string name="dsfx3d">alpha\@dsfx3d</string>
+    <string name="third_party_dialog_msg">
+        We could\'t find what you were looking for, maybe because you are the first person to search it(that\'s actually a cool thing).
+        \nPlease continue to download from browser using a third party service.\nIf you choose to continue others wont have to open the browser for the same.\n\nThanks, You are Awesome! </string>
+</resources>

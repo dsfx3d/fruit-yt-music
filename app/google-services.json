@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "789465465909",
+    "firebase_url": "https://fruit-c0f3b.firebaseio.com",
+    "project_id": "fruit-c0f3b",
+    "storage_bucket": "fruit-c0f3b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:789465465909:android:53eacb2e37a33e63",
+        "android_client_info": {
+          "package_name": "dope.apps.dsfx3d.fruit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "789465465909-o6k5ljjp3stpmqsk3qa7gu19c7lregi9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "dope.apps.dsfx3d.fruit",
+            "certificate_hash": "8E051F2DE0EB0DBC5FC7F5A6B61EB89B477290C6"
+          }
+        },
+        {
+          "client_id": "789465465909-32ect0hcrcqk1p1tgtb8l816p1f7nsjj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCNPasHaj6mNgCC4k88l16x3M0RDYAG1E"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "789465465909-32ect0hcrcqk1p1tgtb8l816p1f7nsjj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

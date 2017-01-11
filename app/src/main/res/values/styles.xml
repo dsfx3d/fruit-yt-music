@@ -1,0 +1,19 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/darker_chat_green</item>
+        <item name="colorPrimaryDark">@color/darker_chat_green</item>
+        <item name="colorAccent">@color/clouds</item>
+    </style>
+
+    <style name="SearchBarTheme" parent="Widget.AppCompat.EditText">
+        <item name="background">@color/darker_chat_green</item>
+        <item name="android:textCursorDrawable">@null</item>
+        <item name="android:paddingStart">5dp</item>
+        <item name="android:paddingEnd">5dp</item>
+        <item name="android:paddingTop">20dp</item>
+    </style>
+
+</resources>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="dope.apps.dsfx3d.fruit.MainActivity"
+    android:background="@drawable/main_bg">
+
+
+    <com.wang.avi.AVLoadingIndicatorView
+        android:id="@+id/pacman"
+        android:visibility="invisible"
+        style="@style/AVLoadingIndicatorView.Large"
+        android:layout_height="50dp"
+        android:layout_width="50dp"
+        android:layout_centerHorizontal="true"
+        app:indicatorName="PacmanIndicator"/>
+
+    <RelativeLayout
+        android:id="@+id/loading_indicator"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_below
+            ="@+id/search_btn">
+        <com.wang.avi.AVLoadingIndicatorView
+            style="@style/AVLoadingIndicatorView.Large"
+            android:layout_height="100dp"
+            android:layout_width="100dp"
+            app:indicatorName="BallSpinFadeIndicator"/>
+    </RelativeLayout>
+
+    <dope.apps.dsfx3d.fruit.customUI.FontFitEditText
+        android:id="@+id/search_bar"
+        android:layout_above="@id/search_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textCursorDrawable="@null"
+        android:background="#0000"
+        android:padding="10dp"
+        android:imeOptions="actionSearch"
+        android:singleLine="true"
+        android:paddingBottom="3dp"
+        android:textSize="40sp"
+        android:gravity="bottom"
+        android:textAlignment="center"
+        android:shadowRadius="10"
+        android:shadowColor="@color/even_darker_chat_green"
+        android:hint="artist + track"
+        fontPath="fonts/alba.matter.ttf"/>
+
+    <Button
+        android:id="@+id/search_btn"
+        android:layout_centerInParent="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:background="@color/even_darker_chat_green"
+        android:fontFamily="sans-serif-condensed"
+        android:text="@string/sniff_internet"
+        />
+
+    <TextView
+        android:id="@+id/footer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/dsfx3d"
+        android:textSize="8sp"
+        android:padding="1dp"
+        android:background="@color/t_black"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"/>
+
+    <RelativeLayout
+        android:id="@+id/star_layout"
+        android:layout_alignParentEnd="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/t_black">
+        <TextView
+            android:id="@+id/val_star"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="25"
+            android:textSize="15sp"
+            android:gravity="center"
+            android:paddingEnd="8dip"
+            android:layout_alignTop="@+id/ic_star"
+            android:layout_alignBottom="@+id/ic_star"
+            android:layout_toEndOf="@+id/ic_star"
+             />
+
+        <ImageView
+            android:id="@+id/ic_star"
+            android:layout_width="30sp"
+            android:layout_height="30sp"
+            android:background="@drawable/ic_action_stars"
+            />
+    </RelativeLayout>
+
+</RelativeLayout>
