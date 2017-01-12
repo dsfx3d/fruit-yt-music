@@ -19,6 +19,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -84,8 +85,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     * Important Override
     * Required for Calligraphy dependency
     * */
-    @Override
-    protected void attachBaseContext(Context newBase) {
+    @Override protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
@@ -100,16 +100,13 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
 
     private boolean handleActivityTouch(MotionEvent event) {
-        int initialActivityY, initialTouchY, initialY = 0, moveY;
+        int initialActivityY = 0, initialTouchY = 0, initialY = 0, moveY;
         switch(event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                initialActivityY = (int) mainActivity.getY();
-                initialTouchY = (int) event.getRawY();
-                initialY = initialActivityY - initialTouchY;
+
                 return true;
             case MotionEvent.ACTION_MOVE:
-                moveY = (int) event.getRawY();
-                mainActivity.animate().y(initialY-moveY).setDuration(0).start();
+                return true;
         }
         return false;
     }
@@ -124,7 +121,6 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     *       * set search button to normal state
     *       * push spring
     *       * call searchButtonClicked operations
-    *
     * */
     boolean goflag=true;
     private boolean handleSearchButtonTouch(MotionEvent event) {
@@ -146,9 +142,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
                 reboundSpring.setEndValue(0);
                 searchBtnClicked();
                 return false;
-
         }
-
         return false;
     }
 
