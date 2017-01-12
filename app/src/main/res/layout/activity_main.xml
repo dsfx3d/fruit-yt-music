@@ -41,6 +41,7 @@
         android:textCursorDrawable="@null"
         android:background="#0000"
         android:padding="10dp"
+        android:inputType="textNoSuggestions"
         android:imeOptions="actionSearch"
         android:singleLine="true"
         android:paddingBottom="3dp"
@@ -59,8 +60,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
-        android:background="@color/even_darker_chat_green"
+        android:background="@drawable/primary_button"
         android:fontFamily="sans-serif-condensed"
+        android:textColor="@color/colorPrimaryLight"
         android:text="@string/sniff_internet"
         />
 
@@ -71,6 +73,7 @@
         android:text="@string/dsfx3d"
         android:textSize="8sp"
         android:padding="1dp"
+        android:textColor="@color/colorPrimaryLight"
         android:background="@color/t_black"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"/>
@@ -92,6 +95,7 @@
             android:layout_alignTop="@+id/ic_star"
             android:layout_alignBottom="@+id/ic_star"
             android:layout_toEndOf="@+id/ic_star"
+            android:textColor="@color/colorPrimaryLight"
              />
 
         <ImageView

@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
@@ -33,6 +34,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnTouch;
 import dope.apps.dsfx3d.fruit.customUI.FontFitEditText;
 import dope.apps.dsfx3d.fruit.entities.YTD.YTDResult;
 import dope.apps.dsfx3d.fruit.entities.track.Data;
@@ -42,61 +46,140 @@ import dope.apps.dsfx3d.fruit.network.RequestHandler;
 import dope.apps.dsfx3d.fruit.utils.UpdateManager;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+/**
+ * MainActivity
+ * Every key operation is implemented in this activity.
+ *
+ * UI States:   * BaseState
+ *              * SearchInProgress
+ *
+ * */
+
+
+public class MainActivity extends AppCompatActivity implements View.OnTouchListener{
 
     //Rebound Api
     private Spring reboundSpring;
 
     //UI
-    private RelativeLayout loadingIndicatorView, starLayout;
-    private AVLoadingIndicatorView pacmanIndicatorView;
-    private FontFitEditText searchBar;
-    private Button searchButton;
-    private TextView footerView;
+    @BindView(R.id.activity_main) RelativeLayout mainActivity;
+    @BindView(R.id.loading_indicator) RelativeLayout loadingIndicatorView;
+    @BindView(R.id.star_layout) RelativeLayout starLayout;
+    @BindView(R.id.pacman) AVLoadingIndicatorView pacmanIndicatorView;
+    @BindView(R.id.search_bar) FontFitEditText searchBar;
+    @BindView(R.id.search_btn) Button searchButton;
+    @BindView(R.id.footer) TextView footerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
         init();
-        getLayoutElements();
         addLayoutListeners();
         UpdateManager.check4Update(this);
     }
 
+    /*
+    * Important Override
+    * Required for Calligraphy dependency
+    * */
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
     @Override
-    public void onClick(View v) {
+    public boolean onTouch(View v, MotionEvent event) {
         switch (v.getId()) {
-            case R.id.search_btn:
-                searchBtnClicked();
-                break;
+            case R.id.search_btn: return handleSearchButtonTouch(event);
+            case R.id.activity_main: return handleActivityTouch(event);
         }
+        return false;
     }
 
+
+    private boolean handleActivityTouch(MotionEvent event) {
+        int initialActivityY, initialTouchY, initialY = 0, moveY;
+        switch(event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                initialActivityY = (int) mainActivity.getY();
+                initialTouchY = (int) event.getRawY();
+                initialY = initialActivityY - initialTouchY;
+                return true;
+            case MotionEvent.ACTION_MOVE:
+                moveY = (int) event.getRawY();
+                mainActivity.animate().y(initialY-moveY).setDuration(0).start();
+        }
+        return false;
+    }
+
+    /*
+    * Handle touch events on search button
+    *
+    * @job:ACTION_DOWN
+    *       * set search button to pressed state
+    *       * push the spring
+    * @job:ACTION_UP
+    *       * set search button to normal state
+    *       * push spring
+    *       * call searchButtonClicked operations
+    *
+    * */
+    boolean goflag=true;
+    private boolean handleSearchButtonTouch(MotionEvent event) {
+
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                searchButton.setPressed(true);
+                reboundSpring.setVelocity(8);
+                reboundSpring.setEndValue(0.1);
+                goflag=true;
+                return true;
+            case MotionEvent.ACTION_OUTSIDE:
+                goflag=false;
+                return false;
+            case MotionEvent.ACTION_UP:
+                if(!goflag)return false;
+                searchButton.setPressed(false);
+                reboundSpring.setVelocity(6);
+                reboundSpring.setEndValue(0);
+                searchBtnClicked();
+                return false;
+
+        }
+
+        return false;
+    }
+
+    /*
+    * All initialization tasks or jobs with high priority on launch
+    * @job: * initialize spring mechanics
+    *       * add spring mechanics listener
+    * */
     private void init() {
         reboundSpring = SpringSystem.create().createSpring();
         reboundSpring.addListener(springListener);
     }
 
-    private void getLayoutElements() {
-        loadingIndicatorView = (RelativeLayout) findViewById(R.id.loading_indicator);
-        searchBar = (FontFitEditText) findViewById(R.id.search_bar);
-        searchButton = (Button) findViewById(R.id.search_btn);
-        pacmanIndicatorView = (AVLoadingIndicatorView) findViewById(R.id.pacman);
-        starLayout = (RelativeLayout) findViewById(R.id.star_layout);
-        footerView = (TextView) findViewById(R.id.footer);
-    }
-
     private void addLayoutListeners() {
-        searchButton.setOnClickListener(this);
+        searchButton.setOnTouchListener(this);
+        mainActivity.setOnTouchListener(this);
         searchBar.setOnEditorActionListener(searchBarIMEListener);
     }
 
+    /*
+    * Function to be called on searchButton click
+    * @job:ifBaseState
+    *       * validates search query from search bar
+    *       * initializes spring push
+    *       * start search operation
+    *       * update UI for search operation
+    *
+    * @job:ifSearchingInProgress
+    *       * stop search operation
+    *       * update UI to base state
+    * */
     private void searchBtnClicked() {
         String searchQuery = searchBar.getText().toString();
         if(searchQuery.length()<2) return;
@@ -104,17 +187,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         reboundSpring.setVelocity(5);
 
         if(loadingIndicatorView.getVisibility()==View.GONE) {
-            Log.v("__searchBtnClicked","Request query: "+searchQuery);
-            startSearchingUI();
-            startSearchingYTD(searchQuery);
+            updateUI2SearchInProgress();
+            makeMusicDownloadRequest(searchQuery);
         } else {
-            stopSearchingUI();
-            stopSearchingYTD();
+            updateUI2BaseState();
+            cancelMusicDownloadRequest();
         }
     }
 
-    /*Changes in UI when search operation begins*/
-    private void startSearchingUI() {
+    /*
+    * Changes in UI when search operation begins
+    *
+    * @job: * update UI to searchInProgress
+    *
+    * */
+    private void updateUI2SearchInProgress() {
         loadingIndicatorView.setVisibility(View.VISIBLE);
         pacmanIndicatorView.setVisibility(View.VISIBLE);
         searchBar.setEnabled(false);
@@ -128,26 +215,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         );
     }
 
-    /*Changes in UI when search operation ends*/
-    private void stopSearchingUI() {
+    /*
+    * Changes in UI when search operation ends
+    *
+    * @job: * update UI to baseState
+    * */
+    private void updateUI2BaseState() {
         loadingIndicatorView.setVisibility(View.GONE);
         pacmanIndicatorView.setVisibility(View.INVISIBLE);
         searchBar.setEnabled(true);
-        searchButton.setBackgroundColor(getResources().getColor(R.color.even_darker_chat_green));
+        searchButton.setBackground(getResources().getDrawable(R.drawable.primary_button));
         searchButton.setText(getString(R.string.sniff_internet));
         starLayout.setVisibility(View.VISIBLE);
         footerView.setVisibility(View.VISIBLE);
     }
 
-    private void startSearchingYTD(String searchQuery) {
+    /*
+    *
+    * */
+    private void makeMusicDownloadRequest(String searchQuery) {
         Request request = RequestHandler.getYTDSearchRequest(searchQuery, searchYTDRequestListener, requestErrorListener);
         request.setTag(SEARCH_YTD);
         NetworkPipeline.getInstance(this).addToRequestQueue(request);
     }
 
-    private void stopSearchingYTD() {
+    private void cancelMusicDownloadRequest() {
         NetworkPipeline.getInstance(this).getRequestQueue().cancelAll(SEARCH_YTD);
     }
+
 
     /*For future use with bezerk mode*/
     private void startSearchingMusicGraph(String searchQuery) {
@@ -160,7 +255,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         NetworkPipeline.getInstance(this).getRequestQueue().cancelAll(SEARCH_TRACK);
     }
 
-    private void downloadMpeg(URL url) {
+    private void startMp3DownloadTask(URL url) {
         DownloadManager manager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url.toString()));
         request.setTitle("Downloading..");
@@ -226,7 +321,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Response.Listener<String> searchTrackRequestListener = new Response.Listener<String>() {
         @Override
         public void onResponse(String response) {
-            Log.v("__searchTrackRequest",response);
             stopSearchingMusicGraph();
             Gson gson = new Gson();
             MGTrack trackMin = gson.fromJson(response, MGTrack.class);
@@ -234,7 +328,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if(trackMin.status.code==0 && trackMin.pagination.count>0) {
                 int popIndex=0;
                 for (int i=0;i<data.length;i++) {
-                    Log.v("__searchTrackRequest", data[i].artist_name + " - " + data[i].title + " - " + data[i].popularity);
                     if(data[i].popularity>data[popIndex].popularity) popIndex=i;
                 }
                 searchBar.setText(trackMin.data[popIndex].title.toLowerCase()+" - "+trackMin.data[popIndex].artist_name.toLowerCase());
@@ -245,7 +338,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Response.Listener<String> searchYTDRequestListener = new Response.Listener<String>() {
         @Override
         public void onResponse(String response) {
-            Log.v("__searchYTDReqListener",response);
             Gson gson = new Gson();
             YTDResult ytdResult = gson.fromJson(response, YTDResult.class);
             final YTDResult.Data data = ytdResult.data[0];
@@ -287,10 +379,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         @Override
         protected void onPostExecute(String s) {
-            Log.v("__downloadUrl", "content-type: "+s);
-            stopSearchingUI();
+            updateUI2BaseState();
             switch (s) {
-                case "audio/mpeg":  downloadMpeg(url);  break;
+                case "audio/mpeg":  startMp3DownloadTask(url);  break;
                 default:    showDownloadFromBrowserDialog(url); break;
             }
         }
